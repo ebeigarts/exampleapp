@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: exampleapp-db-migrate
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: main
+        command:
+        - bin/rails
+        - db:migrate
+        image: registry.digitalocean.com/makit-test/exampleapp:latest
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: exampleapp-config
+        - secretRef:
+            name: exampleapp-secret

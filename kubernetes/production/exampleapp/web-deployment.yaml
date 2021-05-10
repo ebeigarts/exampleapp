@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exampleapp-web-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: exampleapp-web
+  template:
+    metadata:
+      labels:
+        app: exampleapp-web
+    spec:
+      initContainers:
+        - name: migrations
+          image: registry.digitalocean.com/makit-test/exampleapp:latest
+          imagePullPolicy: Always
+          command:
+          - bin/rake
+          - db:abort_if_pending_migrations
+          envFrom:
+          - configMapRef:
+              name: exampleapp-config
+          - secretRef:
+              name: exampleapp-secret
+      containers:
+        - name: main
+          image: registry.digitalocean.com/makit-test/exampleapp:latest
+          imagePullPolicy: Always
+          command:
+          - bin/rails
+          - server
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          ports:
+          - containerPort: 3000
+          livenessProbe:
+            httpGet:
+              path: /robots.txt
+              port: 3000
+          readinessProbe:
+            httpGet:
+              path: /robots.txt
+              port: 3000
+          envFrom:
+          - configMapRef:
+              name: exampleapp-config
+          - secretRef:
+              name: exampleapp-secret

@@ -1,0 +1,14 @@
+resources:
+- postgres/config.yaml
+- postgres/pv-claim.yaml
+- postgres/pv.yaml
+- postgres/service.yaml
+- postgres/statefulset.yaml
+- exampleapp/config.yaml
+- exampleapp/db-migrate.yaml
+- exampleapp/web-deployment.yaml
+- exampleapp/web-ingress.yaml
+- exampleapp/web-service.yaml
+images:
+- name: registry.digitalocean.com/makit-test/exampleapp
+  newTag: "1"
